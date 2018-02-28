@@ -66,19 +66,20 @@
         });
     }
 
-    function getUserPlaylists() {
+    function getUserId() {
         $.ajax({
             url: 'https://api.spotify.com/v1/me',
             headers: {
                'Authorization': 'Bearer ' + access_token
             },
             success: function(response) {
-                displayPlaylists(response.id);      
+                return response.id;      
             }
         });
     }
 
-    function displayPlaylists(user_id) {
+    function displayPlaylists() {
+        var user_id = getUserId();
         $.ajax({
             url: 'https://api.spotify.com/v1/users/' + user_id + '/playlists',
             headers: {
