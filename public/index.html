@@ -7,7 +7,8 @@
     <style type="text/css">
         #login,
         #loggedin,
-        #songs-table {
+        #songs-table,
+        #saved {
             display: none;
         }
 
@@ -36,12 +37,14 @@
             <h1>Recoustify</h1>
             <div class="results" id='playlist-table'>
                 <p>Your Playlists:</p>
+                <input id="allowCovers" type="checkbox" checked>
+                <label for="allowCovers">Include Covers?</label>
                 <table class="table table-striped table-bordered" id='playlists'>
                     <thead>
                         <tr>
                             <th style="width:5%"> # </th>
                             <th style="width: 78%"> Playlist name </th>
-                            <th style="width: 10%"> Recoustify </th>
+                            <th style="width: 10%"> Acoustify </th>
                             <th style="width: 7%"> Remix </th>
                         </tr>
                     </thead>
@@ -53,11 +56,13 @@
                     <div id="myBar"></div>
                 </div>
                 <p id="playlist_title"></p>
+                <input class="btn btn-primary" id="export-playlist" type="button" value="Save Playlist To Profile">
+                <p id="saved">Playlist saved!</p>
                 <table class="table table-striped table-bordered" id='songs'>
                     <thead>
                         <tr>
-                            <th style="width:5%"> # </th>
-                            <th style="width: 47%"> Original song name </th>
+                            <th style="width:4%"> # </th>
+                            <th style="width: 48%"> Original song name </th>
                             <th style="width: 48%"> Recoustified song name </th>
                         </tr>
                     </thead>
@@ -157,7 +162,8 @@
                 for (var j = 0; j < table.rows[0].cells.length; j++) {
                     if (j == 1) {
                         old_song_title = table.rows[i].cells[j].innerText;
-                        searchForNewTrack(mode, old_song_title, i, false);
+                        var checked = document.getElementById("allowCovers").checked;
+                        searchForNewTrack(mode, old_song_title, i, checked);
                     }
                 }
             }
@@ -184,18 +190,40 @@
                     data: {
                         'q': query,
                         'type': 'track',
-                        'limit': 1,
+                        'limit': 3,
                     },
                     success: function (response) {
-                        appendNewTrack(response.tracks.items, row);
+                        var new_items = response.tracks.items;
+                        var all_defined = true;
+                        for (var i = 0; i < new_items.length; i++) {
+                            if (typeof new_items[i] == 'undefined') {
+                                all_defined = false;
+                            }
+                        }
+                        if (all_defined && allowCovers){
+                            new_items = checkSameSong(response.tracks.items, old_song_title);
+                        }
+                        appendNewTrack(new_items, row);
                     }
                 });
             }
 
+            function checkSameSong(items, old_song_title) {
+                var new_items = [];
+                for (var i = 0; i < items.length; i++) {
+                    var name = items[i].name.toLowerCase();
+                    var strIndex = name.indexOf(old_song_title.toLowerCase());
+                    if(strIndex != -1) {
+                        new_items.push(items[i]);
+                    }
+                }
+                return new_items;
+            }
+
             function appendNewTrack(data, row) {
-                if (data[0]) {
+                if (data.length != 0 && typeof data[0] != 'undefined') {
                     table.rows[row].cells[2].innerHTML = "<a href=" + data[0].uri + ">" + data[0].name + "</a>"
-                    new_playlist_uris[row] = data[0].uri;
+                    new_playlist_uris[row-1] = data[0].uri;
                 }
             }
         }
@@ -233,6 +261,7 @@
 
                 var acousticButton = document.createElement("input");
                 acousticButton.setAttribute("type", "button");
+                acousticButton.setAttribute("value", "Acoustify");
                 (function (i) {
                     acousticButton.addEventListener("click", function () {
                         acoustic(i, data[i].uri, data[i].name);
@@ -241,14 +270,78 @@
                 var currentCell = row.insertCell(2);
                 currentCell.appendChild(acousticButton);
 
-                var remixButton = row.insertCell(3);
+                var remixButton = document.createElement("input");
+                remixButton.setAttribute("type", "button");
+                remixButton.setAttribute("value", "Remix");
+                (function (i) {
+                    remixButton.addEventListener("click", function () {
+                        remix(i, data[i].uri, data[i].name);
+                    });
+                })(i);
+                var cell = row.insertCell(3);
+                cell.appendChild(remixButton);
+
                 playlist_owners.push(data[i].owner.id);
                 rowNumber.innerHTML = i + 1;
                 title.innerHTML = "<a href=" + data[i].uri + ">" + data[i].name + "</a>";
-                remixButton.innerHTML = i + 1;
             }
         }
 
+        function exportPlaylist(mode, old_name) {
+            getUserId(mode, old_name);
+        }
+
+        function getUserId(mode, old_name) {
+            $.ajax({
+                url: 'https://api.spotify.com/v1/me',
+                headers: {
+                    'Authorization': 'Bearer ' + access_token
+                },
+                success: function (response) {
+                    createPlaylist(response.id, mode, old_name);
+                }
+            });
+        }
+
+        function createPlaylist(user_id, mode, old_name) {
+            var title;
+            if (mode == ACOUSTIC_MODE) {
+                title = 'Acoustified - ' + old_name;
+            } else {
+                title = 'Remixed - ' + old_name;
+            }
+            $.ajax({
+                type: 'POST',
+                url: 'https://api.spotify.com/v1/users/' + user_id + '/playlists',
+                headers: {
+                    'Authorization': 'Bearer ' + access_token,
+                    'Content-Type': 'application/json'
+                },
+                data: JSON.stringify({name: title}),
+                success: function (response) {
+                    fillNewPlaylist(user_id, response.uri);
+                }
+            });
+        }
+
+        function fillNewPlaylist(user_id, playlist_uri) {
+            var arr = playlist_uri.split(":");
+            var playlist_id = arr[arr.length - 1];
+            $.ajax({
+                type: 'POST',
+                url: 'https://api.spotify.com/v1/users/' + user_id + '/playlists/' + playlist_id + '/tracks',
+                headers: {
+                    'Authorization': 'Bearer ' + access_token,
+                    'Content-Type': 'application/json'
+                },
+                data: JSON.stringify({"uris": new_playlist_uris}),
+                success: function (response) {
+                    $("#export-playlist").hide();
+                    $("#saved").show();
+                }
+            });
+        }
+        
         function acoustic(num, playlist_uri, name) {
             var arr = playlist_uri.split(":");
             var playlist_id = arr[arr.length - 1];
@@ -256,9 +349,27 @@
             displayOrigTracks(playlist_owners[num], playlist_id);
             $("#myProgress").show();
             move();
-            setTimeout(function () { populateSongTableWithNewTracks(ACOUSTIC_MODE) }, 2000);//create checkbox for allowing covers
+            setTimeout(function () { populateSongTableWithNewTracks(ACOUSTIC_MODE) }, 2000);
             $('#playlist-table').hide();
             $('#songs-table').show();
+            $("#export-playlist").on("click", function() {
+                exportPlaylist(ACOUSTIC_MODE, name);
+            });
+        }
+
+        function remix(num, playlist_uri, name) {
+            var arr = playlist_uri.split(":");
+            var playlist_id = arr[arr.length - 1];
+            document.getElementById("playlist_title").innerHTML = name;
+            displayOrigTracks(playlist_owners[num], playlist_id);
+            $("#myProgress").show();
+            move();
+            setTimeout(function () { populateSongTableWithNewTracks(REMIX_MODE) }, 2000);
+            $('#playlist-table').hide();
+            $('#songs-table').show();
+            $("#export-playlist").on("click", function() {
+                exportPlaylist(REMIX_MODE, name);
+            });
         }
 
         function initApp() {
