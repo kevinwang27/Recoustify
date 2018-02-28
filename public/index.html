@@ -10,6 +10,18 @@
         #songs-table {
             display: none;
         }
+
+        #myProgress {
+            width: 100%;
+            background-color: grey;
+            display: none;
+        }
+
+        #myBar {
+            width: 1%;
+            height: 10px;
+            background-color: green;
+        }
     </style>
 </head>
 
@@ -37,18 +49,21 @@
                 </table>
             </div>
             <div class="results" id='songs-table'>
-                    <p id="playlist_title"></p>
-                    <table class="table table-striped table-bordered" id='songs'>
-                        <thead>
-                            <tr>
-                                <th style="width:5%"> # </th>
-                                <th style="width: 47%"> Original song name </th>
-                                <th style="width: 48%"> Recoustified song name </th>
-                            </tr>
-                        </thead>
-                        <tbody id="song-items"></tbody>
-                    </table>
+                <div id="myProgress">
+                    <div id="myBar"></div>
                 </div>
+                <p id="playlist_title"></p>
+                <table class="table table-striped table-bordered" id='songs'>
+                    <thead>
+                        <tr>
+                            <th style="width:5%"> # </th>
+                            <th style="width: 47%"> Original song name </th>
+                            <th style="width: 48%"> Recoustified song name </th>
+                        </tr>
+                    </thead>
+                    <tbody id="song-items"></tbody>
+                </table>
+            </div>
         </div>
     </div>
     <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
@@ -62,6 +77,19 @@
         const ACOUSTIC_MODE = 0;
         const REMIX_MODE = 1;
 
+        function move() {
+            var elem = document.getElementById("myBar");
+            var width = 1;
+            var id = setInterval(frame, 18);
+            function frame() {
+                if (width >= 100) {
+                    clearInterval(id);
+                } else {
+                    width++;
+                    elem.style.width = width + '%';
+                }
+            }
+        }
         function getHashParams() {
             var hashParams = {};
             var e, r = /([^&;=]+)=?([^&;]*)/g,
@@ -99,8 +127,6 @@
                     'fields': 'items(track(name,href,uri,artists))'
                 },
                 success: function (response) {
-                    $('#playlist-table').hide();
-                    $('#songs-table').show();
                     populateSongTable(response.items);
                 }
             });
@@ -114,7 +140,7 @@
                 var title = row.insertCell(1);
                 var new_title = row.insertCell(2);
 
-                rowNumber.innerHTML = i+1;
+                rowNumber.innerHTML = i + 1;
                 title.innerHTML = "<a href=" + data[i].track.uri + ">" + data[i].track.name + "</a>";
                 new_title.innerHTML = "<a href=" + data[i].track.uri + ">" + data[i].track.name + "</a>";
                 new_playlist_uris.push(data[i].track.uri);
@@ -131,8 +157,10 @@
                         old_song_title = table.rows[i].cells[j].innerText;
                         searchForNewTrack(mode, old_song_title, i);
                     }
-                }  
+                }
             }
+
+            $("#myProgress").hide();
 
             function searchForNewTrack(mode, old_song_title, row) {
                 old_song_fixed = old_song_title.replace(" ", "+");
@@ -199,8 +227,8 @@
 
                 var acousticButton = document.createElement("input");
                 acousticButton.setAttribute("type", "button");
-                (function(i) {
-                    acousticButton.addEventListener("click", function() {
+                (function (i) {
+                    acousticButton.addEventListener("click", function () {
                         acoustic(i, data[i].uri, data[i].name);
                     });
                 })(i);
@@ -209,9 +237,9 @@
 
                 var remixButton = row.insertCell(3);
                 playlist_owners.push(data[i].owner.id);
-                rowNumber.innerHTML = i+1;
+                rowNumber.innerHTML = i + 1;
                 title.innerHTML = "<a href=" + data[i].uri + ">" + data[i].name + "</a>";
-                remixButton.innerHTML = i+1;
+                remixButton.innerHTML = i + 1;
             }
         }
 
@@ -220,7 +248,11 @@
             var playlist_id = arr[arr.length - 1];
             document.getElementById("playlist_title").innerHTML = name;
             displayOrigTracks(playlist_owners[num], playlist_id);
-            populateSongTableWithNewTracks(ACOUSTIC_MODE);
+            $("#myProgress").show();
+            move();
+            setTimeout(function () { populateSongTableWithNewTracks(ACOUSTIC_MODE) }, 2000);
+            $('#playlist-table').hide();
+            $('#songs-table').show();
         }
 
         function initApp() {
