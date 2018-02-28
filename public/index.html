@@ -74,6 +74,7 @@
         var error;
         var playlist_owners = [];
         var new_playlist_uris = [];
+        var old_artists = [];
         const ACOUSTIC_MODE = 0;
         const REMIX_MODE = 1;
 
@@ -144,6 +145,7 @@
                 title.innerHTML = "<a href=" + data[i].track.uri + ">" + data[i].track.name + "</a>";
                 new_title.innerHTML = "<a href=" + data[i].track.uri + ">" + data[i].track.name + "</a>";
                 new_playlist_uris.push(data[i].track.uri);
+                old_artists.push(data[i].track.artists[0].name);
             }
         }
 
@@ -155,20 +157,24 @@
                 for (var j = 0; j < table.rows[0].cells.length; j++) {
                     if (j == 1) {
                         old_song_title = table.rows[i].cells[j].innerText;
-                        searchForNewTrack(mode, old_song_title, i);
+                        searchForNewTrack(mode, old_song_title, i, false);
                     }
                 }
             }
 
             $("#myProgress").hide();
 
-            function searchForNewTrack(mode, old_song_title, row) {
-                old_song_fixed = old_song_title.replace(" ", "+");
+            function searchForNewTrack(mode, old_song_title, row, allowCovers) {
                 var modifier;
                 if (mode == ACOUSTIC_MODE) {
                     modifier = 'acoustic';
                 } else {
                     modifier = 'remix'
+                }
+                if (allowCovers) {
+                    var query = old_song_title + ' ' + modifier
+                } else {
+                    var query = 'track:' + old_song_title + ' ' + modifier + ' artist:' + old_artists[row-1];
                 }
                 $.ajax({
                     url: 'https://api.spotify.com/v1/search',
@@ -176,7 +182,7 @@
                         'Authorization': 'Bearer ' + access_token
                     },
                     data: {
-                        'q': old_song_fixed + '+' + modifier,
+                        'q': query,
                         'type': 'track',
                         'limit': 1,
                     },
@@ -250,7 +256,7 @@
             displayOrigTracks(playlist_owners[num], playlist_id);
             $("#myProgress").show();
             move();
-            setTimeout(function () { populateSongTableWithNewTracks(ACOUSTIC_MODE) }, 2000);
+            setTimeout(function () { populateSongTableWithNewTracks(ACOUSTIC_MODE) }, 2000);//create checkbox for allowing covers
             $('#playlist-table').hide();
             $('#songs-table').show();
         }
