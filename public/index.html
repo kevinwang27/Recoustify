@@ -59,7 +59,6 @@
         var error;
         var playlist_owners = [];
         var new_playlist_uris = [];
-        var old_artists = [];
         const ACOUSTIC_MODE = 0;
         const REMIX_MODE = 1;
 
@@ -97,7 +96,7 @@
                     'Authorization': 'Bearer ' + access_token
                 },
                 data: {
-                    'fields': 'items(track(name,href,uri))'
+                    'fields': 'items(track(name,href,uri,artists))'
                 },
                 success: function (response) {
                     $('#playlist-table').hide();
@@ -118,9 +117,7 @@
                 rowNumber.innerHTML = i+1;
                 title.innerHTML = "<a href=" + data[i].track.uri + ">" + data[i].track.name + "</a>";
                 new_title.innerHTML = "<a href=" + data[i].track.uri + ">" + data[i].track.name + "</a>";
-
                 new_playlist_uris.push(data[i].track.uri);
-                //old_artists.push(data[i].track.artists[0].name);
             }
         }
 
@@ -128,7 +125,6 @@
             var table = document.getElementById("songs");
             var old_song_title;
             var new_song_info;
-            alert(table.rows.length);
             for (var i = 1; i < table.rows.length; i++) {
                 for (var j = 0; j < table.rows[0].cells.length; j++) {
                     if (j == 1) {
@@ -137,7 +133,7 @@
                     }
                 }  
             }
-            
+
             function searchForNewTrack(mode, old_song_title, row) {
                 old_song_fixed = old_song_title.replace(" ", "+");
                 var modifier;
@@ -152,7 +148,7 @@
                         'Authorization': 'Bearer ' + access_token
                     },
                     data: {
-                        'q': 'track:' + old_song_fixed + '+' + modifier + '+' + 'artist:' + old_artists[row-1],
+                        'q': old_song_fixed + '+' + modifier,
                         'type': 'track',
                         'limit': 1,
                     },
