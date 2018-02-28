@@ -59,6 +59,7 @@
         var error;
         var playlist_owners = [];
         var new_playlist_uris = [];
+        var old_artists = [];
         const ACOUSTIC_MODE = 0;
         const REMIX_MODE = 1;
 
@@ -117,7 +118,9 @@
                 rowNumber.innerHTML = i+1;
                 title.innerHTML = "<a href=" + data[i].track.uri + ">" + data[i].track.name + "</a>";
                 new_title.innerHTML = "<a href=" + data[i].track.uri + ">" + data[i].track.name + "</a>";
+
                 new_playlist_uris.push(data[i].track.uri);
+                //old_artists.push(data[i].track.artists[0].name);
             }
         }
 
@@ -125,6 +128,7 @@
             var table = document.getElementById("songs");
             var old_song_title;
             var new_song_info;
+            alert(table.rows.length);
             for (var i = 1; i < table.rows.length; i++) {
                 for (var j = 0; j < table.rows[0].cells.length; j++) {
                     if (j == 1) {
@@ -133,8 +137,7 @@
                     }
                 }  
             }
-            console.log(new_playlist_uris);
-
+            
             function searchForNewTrack(mode, old_song_title, row) {
                 old_song_fixed = old_song_title.replace(" ", "+");
                 var modifier;
@@ -149,7 +152,7 @@
                         'Authorization': 'Bearer ' + access_token
                     },
                     data: {
-                        'q': old_song_fixed + '+' + modifier,
+                        'q': 'track:' + old_song_fixed + '+' + modifier + '+' + 'artist:' + old_artists[row-1],
                         'type': 'track',
                         'limit': 1,
                     },
