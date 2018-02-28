@@ -19,15 +19,16 @@
 
       <div id="loggedin">
           <h1>Recoustify</h1>
-          <p>Make your playlists acoustic or remixed!</p>
-          <input type="text" class="form-control input-lg"
-          id="playlist-search" placeholder="Enter playlist name" value="">
-          <br>
-          <button class="btn btn-primary btn-lg" id='search' onclick="search()">Search</button>
-          <div id="results">
-              <ol id="result-list">
-
-              </ol>
+          <p>Your Playlists:</p>
+          <div class="results" id='playlist-table'>     
+               <table class="table table-striped table-bordered">
+                 <thead>
+                     <tr> <th style="width:10%"> # </th>
+                          <th style="width: 90%"> Playlist name </th>
+                     </tr>
+                 </thead>
+                 <tbody id="playlist-items"></tbody>
+               </table>
           </div>
       </div>
     </div>
@@ -65,14 +66,38 @@
         });
     }
 
-    function appendToList(item) {
-        $("#result-list").append("<li>" + item.name + "</li>");
+    function getUserPlaylists() {
+        $.ajax({
+            url: 'https://api.spotify.com/v1/me',
+            headers: {
+               'Authorization': 'Bearer ' + access_token
+            },
+            success: function(response) {
+                displayPlaylists(response.id);      
+            }
+        });
     }
 
-    function search() {
-        var text = document.getElementById("playlist-search").value;
-        if (text != '') {
-            performSearch(text.replace(/ /g, "+"));
+    function displayPlaylists(user_id) {
+        $.ajax({
+            url: 'https://api.spotify.com/v1/users/' + user_id + '/playlists',
+            headers: {
+               'Authorization': 'Bearer ' + access_token
+            },
+            success: function(response) {
+                populatePlaylistTable(response.items);
+            }
+        });
+    }
+
+    function populatePlaylistTable(data) {
+        for (var i = 0;i < data.length;i++) {
+            var tr= $("<tr>");
+            var rowNumber = $("<td>").text(i+1);
+            var title = $("<td>").append($("<a>").attr('href', data[i].uri).text(data[i].name));
+            tr.append(rowNumber);
+            tr.append(title);
+            $("#playlist-items").append(tr);
         }
     }
 
@@ -88,6 +113,7 @@
             if (access_token) {
                 $('#login').hide();
                 $('#loggedin').show();
+                getUserPlaylists();
             } else {
                 $('#login').show();
                 $('#loggedin').hide();
