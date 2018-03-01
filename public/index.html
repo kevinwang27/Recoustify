@@ -26,22 +26,33 @@
             background-color: green;
         }
 
-        .row.content {
+        .container-fluid,
+        .row-fluid {
+            padding-right: 0;
+            padding-left: 0;
+        }
+
+        .row-fluid {
             height: 90vh;
+            overflow: hidden;
+        }
+
+        .row-fluid div {
+            -webkit-transition: width 0.4s ease, margin 0.4s ease;
+            -moz-transition: width 0.4s ease, margin 0.4s ease;
+            -o-transition: width 0.4s ease, margin 0.4s ease;
+            transition: width 0.4s ease, margin 0.4s ease;
         }
 
         .col-sm-7,
-        .col-sm-5 {
+        .col-sm-4,
+        .col-sm-auto {
             height: 100%;
         }
 
         #main-screen {
             background-color: #1ed760;
             color: black;
-        }
-
-        #login-screen {
-            background-color: #e7e7e7;
         }
 
         .flex-center-vertically {
@@ -58,7 +69,7 @@
             font-size: 30px;
         }
 
-        #login-button {
+        #login {
             border-color: #1ed760;
             color: black;
             font-size: 30px;
@@ -69,14 +80,14 @@
             cursor: pointer;
         }
 
-        #login-button:hover {
+        #login:hover {
             background-color: #1ed760;
-            color: #e7e7e7;
+            color: white;
         }
 
         #get-spotify {
             font-size: 20px;
-            color: white;   
+            color: white;
         }
 
         #get-spotify:hover {
@@ -107,6 +118,34 @@
             cursor: pointer;
         }
 
+        #loggedin {
+            overflow: scroll;
+            padding-left: 5%;
+            padding-right: 5%;
+            padding-top: 3%;
+            height: 90vh;
+        }
+        
+        #cover-check {
+            float: right;
+        }
+
+        #playlists td, #playlists th {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+#playlists tr:nth-child(even){background-color: #f2f2f2;}
+
+#playlists tr:hover {background-color: #ddd;}
+
+#playlists th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #1ed760;
+    color: white;
+}
     </style>
 </head>
 
@@ -115,17 +154,20 @@
         <div class="container">
             <div class="navbar-header">
                 <a class="navbar-brand">
-                    <span class="navbar-title"><b>Recoustify</b></span>
+                    <span class="navbar-title">
+                        <b>Recoustify</b>
+                    </span>
                 </a>
             </div>
             <div class="nav navbar-nav navbar-right">
-                <a id="get-spotify" href="http://www.spotify.com" target="_blank" class="btn"><span class="glyphicon glyphicon-music"></span> Get Spotify </a>
+                <a id="get-spotify" href="http://www.spotify.com" target="_blank" class="btn">
+                    <span class="glyphicon glyphicon-music"></span> Get Spotify </a>
             </div>
         </div>
     </div>
 
     <div class="container-fluid">
-        <div class="row content">
+        <div class="row-fluid">
             <div id="main-screen" class="col-sm-7 text-right flex-center-vertically">
                 <h1 id="title">
                     <b> Recoustify </b>
@@ -133,47 +175,47 @@
                 <p id="description"> Make any of your playlists acoustic
                     <br> or remixed instantly </p>
             </div>
-            <div id="login-screen" class="col-sm-5 text-center flex-center-vertically">
-                <a id="login-button" href="/login" class="btn-lg btn"> Log in to get started </a>
+            <div id="login-screen" class="col-12 col-sm-auto text-center flex-center-vertically">
+                <a id="login" href="/login" class="btn-lg btn"> Log in to get started </a>
+                <div id="loggedin">
+                    <div class="results" id='playlist-table'>
+                        <h1><b>Your Playlists:</b></h1>
+                        <div id="cover-check">
+                            <input id="allowCovers" type="checkbox" checked>
+                            <label id="labelCovers" for="allowCovers"> Include Covers? </label>
+                        </div>
+                        <table class="table table-striped table-bordered" id='playlists'>
+                            <thead>
+                                <tr>
+                                    <th style="width:5%"> # </th>
+                                    <th style="width: 78%"> Playlist name </th>
+                                    <th style="width: 10%"> Acoustify </th>
+                                    <th style="width: 7%"> Remix </th>
+                                </tr>
+                            </thead>
+                            <tbody id="playlist-items"></tbody>
+                        </table>
+                    </div>
+                    <div class="results" id='songs-table'>
+                        <div id="myProgress">
+                            <div id="myBar"></div>
+                        </div>
+                        <p id="playlist_title"></p>
+                        <input class="btn btn-primary" id="export-playlist" type="button" value="Save Playlist To Profile">
+                        <p id="saved">Playlist saved!</p>
+                        <table class="table table-striped table-bordered" id='songs'>
+                            <thead>
+                                <tr>
+                                    <th style="width:4%"> # </th>
+                                    <th style="width: 48%"> Original song name </th>
+                                    <th style="width: 48%"> Recoustified song name </th>
+                                </tr>
+                            </thead>
+                            <tbody id="song-items"></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
-
-    <div id="loggedin">
-        <h1>Recoustify</h1>
-        <div class="results" id='playlist-table'>
-            <p>Your Playlists:</p>
-            <input id="allowCovers" type="checkbox" checked>
-            <label for="allowCovers">Include Covers?</label>
-            <table class="table table-striped table-bordered" id='playlists'>
-                <thead>
-                    <tr>
-                        <th style="width:5%"> # </th>
-                        <th style="width: 78%"> Playlist name </th>
-                        <th style="width: 10%"> Acoustify </th>
-                        <th style="width: 7%"> Remix </th>
-                    </tr>
-                </thead>
-                <tbody id="playlist-items"></tbody>
-            </table>
-        </div>
-        <div class="results" id='songs-table'>
-            <div id="myProgress">
-                <div id="myBar"></div>
-            </div>
-            <p id="playlist_title"></p>
-            <input class="btn btn-primary" id="export-playlist" type="button" value="Save Playlist To Profile">
-            <p id="saved">Playlist saved!</p>
-            <table class="table table-striped table-bordered" id='songs'>
-                <thead>
-                    <tr>
-                        <th style="width:4%"> # </th>
-                        <th style="width: 48%"> Original song name </th>
-                        <th style="width: 48%"> Recoustified song name </th>
-                    </tr>
-                </thead>
-                <tbody id="song-items"></tbody>
-            </table>
         </div>
     </div>
     <script>
@@ -332,7 +374,7 @@
             }
         }
 
-        function getUserPlaylists() {
+        function getUserPlaylists(func) {
             $.ajax({
                 url: 'https://api.spotify.com/v1/me',
                 headers: {
@@ -342,6 +384,7 @@
                     displayPlaylists(response.id);
                 }
             });
+            func();
         }
 
         function displayPlaylists(user_id) {
@@ -487,8 +530,11 @@
             } else {
                 if (access_token) {
                     $('#login').hide();
-                    $('#loggedin').show();
-                    getUserPlaylists();
+                    getUserPlaylists(function () {
+                        $('#main-screen').toggleClass('col-sm-7 col-sm-4');
+                        $('#login-screen').toggleClass('flex-center-vertically text-center text-left');
+                        $('#loggedin').show();
+                    });
                 } else {
                     $('#login').show();
                     $('#loggedin').hide();
