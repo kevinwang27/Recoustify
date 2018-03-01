@@ -47,7 +47,7 @@
         }
 
         .col-sm-7,
-        .col-sm-4,
+        .col-sm-3,
         .col-sm-auto {
             height: 100%;
         }
@@ -64,7 +64,7 @@
         }
 
         #title {
-            font-size: 90px;
+            font-size: 80px;
         }
 
         #description {
@@ -155,12 +155,12 @@
         }
 
         .results tr a:hover {
-            color: #5afc93;
+            color: #1ed760;
             text-decoration: none;
         }
 
         .results tr a {
-            color: #1ed760
+            color: #16a548
         }
 
         .results th {
@@ -195,8 +195,9 @@
                 <h1 id="title">
                     <b> Recoustify </b>
                 </h1>
-                <p id="description"> Make any of your playlists acoustic
-                    <br> or remixed instantly </p>
+                <p id="description"> Transform your playlists
+                    <br>into acoustic or remixed
+                    <br>versions instantly.</p>
             </div>
             <div id="login-screen" class="col-12 col-sm-auto text-center flex-center-vertically">
                 <a id="login" href="/login" class="btn-lg btn btn-nice"> Log in to get started </a>
@@ -223,7 +224,7 @@
                     </div>
                     <div class="results" id='songs-table'>
                         <input class="btn btn-nice" id="export-playlist" type="button" value="Save Playlist To Profile">
-                        <p id="saved">Playlist saved!</p>
+                        <h3 id="saved">Playlist saved!</h3>
                         <input class="btn btn-nice" id="again" type="button" onclick="location.reload();" value="Recoustify Another Playlist">
                         <div id="myProgress">
                             <div id="myBar"></div>
@@ -566,7 +567,7 @@
                 if (access_token) {
                     $('#login').hide();
                     getUserPlaylists(function () {
-                        $('#main-screen').toggleClass('col-sm-7 col-sm-4');
+                        $('#main-screen').toggleClass('col-sm-7 col-sm-3');
                         $('#login-screen').toggleClass('flex-center-vertically text-center text-left');
                         $('#loggedin').show();
                     });
