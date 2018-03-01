@@ -14,12 +14,6 @@
             display: none;
         }
 
-        .jumbotron {
-            background-color: #f9f9f9;
-            color: #000;
-            padding: 100px 35px;
-        }
-
         #myProgress {
             width: 100%;
             background-color: grey;
@@ -31,17 +25,117 @@
             height: 10px;
             background-color: green;
         }
+
+        .row.content {
+            height: 90vh;
+        }
+
+        .col-sm-7,
+        .col-sm-5 {
+            height: 100%;
+        }
+
+        #main-screen {
+            background-color: #1ed760;
+            color: black;
+        }
+
+        #login-screen {
+            background-color: #e7e7e7;
+        }
+
+        .flex-center-vertically {
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        #title {
+            font-size: 90px;
+        }
+
+        #description {
+            font-size: 30px;
+        }
+
+        #login-button {
+            border-color: #1ed760;
+            color: black;
+            font-size: 30px;
+            align-self: center;
+            width: 50%;
+            -webkit-transition-duration: 0.4s;
+            transition-duration: 0.4s;
+            cursor: pointer;
+        }
+
+        #login-button:hover {
+            background-color: #1ed760;
+            color: #e7e7e7;
+        }
+
+        #get-spotify {
+            font-size: 20px;
+            color: white;   
+        }
+
+        #get-spotify:hover {
+            color: #1ed760;
+        }
+
+        .navbar-title {
+            font-size: 50px;
+            color: white
+        }
+
+        .navbar {
+            margin-bottom: 0;
+        }
+
+        .navbar-brand:hover {
+            color: #1ed760;
+        }
+
+        .navbar-brand,
+        #get-spotify {
+            line-height: 10vh;
+            height: 10h;
+            padding-top: 0;
+            padding-bottom: 0;
+            -webkit-transition-duration: 0.4s;
+            transition-duration: 0.4s;
+            cursor: pointer;
+        }
+
     </style>
 </head>
 
 <body>
-    
-    <div class="jumbotron text-center">
-        <div id="login">
-            <h1>Recoustify</h1>
-            <p>Make your playlists acoustic or remixed</p>
-            <p>Before we begin, please login with your Spotify account </p>
-            <a href="/login" class="btn btn-primary">Log in</a>
+    <div class="navbar navbar-inverse" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand">
+                    <span class="navbar-title"><b>Recoustify</b></span>
+                </a>
+            </div>
+            <div class="nav navbar-nav navbar-right">
+                <a id="get-spotify" href="http://www.spotify.com" target="_blank" class="btn"><span class="glyphicon glyphicon-music"></span> Get Spotify </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row content">
+            <div id="main-screen" class="col-sm-7 text-right flex-center-vertically">
+                <h1 id="title">
+                    <b> Recoustify </b>
+                </h1>
+                <p id="description"> Make any of your playlists acoustic
+                    <br> or remixed instantly </p>
+            </div>
+            <div id="login-screen" class="col-sm-5 text-center flex-center-vertically">
+                <a id="login-button" href="/login" class="btn-lg btn"> Log in to get started </a>
+            </div>
         </div>
     </div>
 
