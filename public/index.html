@@ -569,6 +569,9 @@
                 success: function (response) {
                     $("#export-playlist").hide();
                     $("#saved").show();
+                },
+                error: function (response) {
+                    console.log(access_token);
                 }
             });
         }
