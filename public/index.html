@@ -292,7 +292,7 @@
             for (var i = 1; i < table.rows.length;) {
                 if (table.rows[i].cells[1].innerText == table.rows[i].cells[2].innerText) {
                     table.deleteRow(i);
-                    delete new_playlist_uris[i];
+                    delete new_playlist_uris[i-1];
                 } else {
                     i++;
                 }
@@ -569,9 +569,6 @@
                 success: function (response) {
                     $("#export-playlist").hide();
                     $("#saved").show();
-                },
-                error: function (response) {
-                    console.log(access_token);
                 }
             });
         }
