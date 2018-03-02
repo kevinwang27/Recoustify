@@ -4,7 +4,7 @@ var querystring = require('querystring');
 var cookieParser = require('cookie-parser');
 
 var client_id = '***REMOVED***';
-var client_secret = '';
+var client_secret = process.env.SECRET_KEY;
 var redirect_uri = 'http://localhost:8888/callback';
 
 var generateRandomString = function(length) {
