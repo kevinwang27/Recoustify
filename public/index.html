@@ -392,15 +392,12 @@
 
             function searchForNewTrack(mode, old_song_title, row) {
                 var modifier;
-                var query;
                 if (mode == ACOUSTIC_MODE) {
                     modifier = 'acoustic';
-                    query = 'track:' + old_song_title + ' ' + modifier + ' artist:' + old_artists[row - 1];
                 } else {
                     modifier = 'remix';
-                    query = old_song_title + ' ' + modifier;
                 }
-                
+                var query = 'track:' + old_song_title + ' ' + modifier + ' artist:' + old_artists[row - 1];
                 $.ajax({
                     url: 'https://api.spotify.com/v1/search',
                     headers: {
@@ -409,11 +406,11 @@
                     data: {
                         'q': query,
                         'type': 'track',
-                        'limit': 3,
+                        'limit': 1,
                     },
                     success: function (response) {
                         var new_items = response.tracks.items;
-                        var all_defined = true;
+                        /* var all_defined = true;
                         for (var i = 0; i < new_items.length; i++) {
                             if (typeof new_items[i] == 'undefined') {
                                 all_defined = false;
@@ -421,13 +418,13 @@
                         }
                         if (all_defined) {
                             new_items = checkSameSong(response.tracks.items, old_song_title);
-                        }
+                        } */
                         appendNewTrack(new_items, row);
                     }
                 });
             }
 
-            function checkSameSong(items, old_song_title) {
+            /* function checkSameSong(items, old_song_title) {
                 var new_items = [];
                 for (var i = 0; i < items.length; i++) {
                     var name = items[i].name;
@@ -437,7 +434,7 @@
                     }
                 }
                 return new_items;
-            }
+            } */
 
             function appendNewTrack(data, row) {
                 var table = document.getElementById("songs");
