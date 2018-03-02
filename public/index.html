@@ -447,6 +447,7 @@
             }
 
             function appendNewTrack(data, row) {
+                var table = document.getElementById("songs");
                 if (data.length != 0 && typeof data[0] != 'undefined') {
                     table.rows[row].cells[2].innerHTML = "<a href=" + data[0].uri + ">" + data[0].name + "</a>"
                     new_playlist_uris[row - 1] = data[0].uri;
