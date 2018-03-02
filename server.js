@@ -5,7 +5,7 @@ var cookieParser = require('cookie-parser');
 
 var client_id = '***REMOVED***';
 var client_secret = process.env.SECRET_KEY;
-var redirect_uri = 'http://localhost:8888/callback';
+var redirect_uri = 'http://localhost:'+ (process.env.PORT || 5000) + '/callback';
 
 var generateRandomString = function(length) {
     var text = '';
