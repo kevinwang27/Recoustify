@@ -560,11 +560,12 @@
             $.ajax({
                 type: 'POST',
                 url: 'https://api.spotify.com/v1/users/' + user_id + '/playlists/' + playlist_id + '/tracks',
+                data: JSON.stringify({ uris: new_playlist_uris }),
+                dataType: 'json',
                 headers: {
                     'Authorization': 'Bearer ' + access_token,
-                    'Accept': 'application/json'
+                    'Content-Type': 'application/json'
                 },
-                data: JSON.stringify({ "uris": new_playlist_uris }),
                 success: function (response) {
                     $("#export-playlist").hide();
                     $("#saved").show();
