@@ -7,4 +7,4 @@ allowing you to make any of them acoustic or remixed. Recoustify will search for
 of the songs in your playlist and add them in if they exist. Then, you can save it directly to your account with
 a single click!
 
-Recoustify is live here: 
+Recoustify is live here: https://recoustify.herokuapp.com/
