@@ -292,7 +292,7 @@
             for (var i = 1; i < table.rows.length;) {
                 if (table.rows[i].cells[1].innerText == table.rows[i].cells[2].innerText) {
                     table.deleteRow(i);
-                    delete new_playlist_uris[i-1];
+                    new_playlist_uris.splice(i-1, 1);
                 } else {
                     i++;
                 }
@@ -300,6 +300,7 @@
             for (var j = 1; j < table.rows.length; j++) {
                 table.rows[j].cells[0].innerHTML = j;
             }
+            console.log(new_playlist_uris);
         }
 
         function move(speed) {
